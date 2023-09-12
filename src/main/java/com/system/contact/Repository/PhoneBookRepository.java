@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PhoneBookRepository extends JpaRepository<PhoneBook, Integer> {
+public interface PhoneBookRepository extends JpaRepository<PhoneBook, Long> {
 
     PhoneBook findByName(String name);
     List<PhoneBook> findByDescription(String description);

@@ -1,13 +1,18 @@
 package com.system.contact.Controller;
 
+import com.system.contact.DTO.SystemDTO;
 import com.system.contact.Model.System_Class;
 import com.system.contact.Service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.system.contact.Service.SystemService.SystemtoDTO;
 
 @RestController
 @RequestMapping("/systems")
@@ -21,36 +26,32 @@ public class SystemController {
     }
 
     @GetMapping("/list")
-    @ResponseBody
-    public List<System_Class> listSystems() {
-        List<System_Class> systems = systemService.getAllSystems();
-        return systems;
+    public ResponseEntity<List<SystemDTO>>  listSystems() {
+        List<SystemDTO> systems = systemService.getAllSystems();
+        return ResponseEntity.ok(systems);
     }
 
     @GetMapping("/{id}")
-    public System_Class viewSystem(@PathVariable Integer id, Model model) {
+    public ResponseEntity<SystemDTO> viewSystem(@PathVariable Long id, Model model) {
         System_Class system = systemService.getSystemById(id);
-        model.addAttribute("system", system);
-        return system;
+        SystemDTO systemDTO = SystemtoDTO(system);
+
+//        model.addAttribute("system", systemDTO);
+        return ResponseEntity.ok(systemDTO);
     }
+
 
 
     @PostMapping("/new")
-    public String createSystem(@ModelAttribute("system") System_Class system) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        System.out.println(localDateTime);
-            system.setTimeCreated(localDateTime);
-            system.setLastTimeEdited(localDateTime);
-        systemService.createSystem(system);
-        return "added Successfully";
+    public ResponseEntity<String> createSystem(@ModelAttribute("system") System_Class system_class) {
+        SystemDTO systemDTO = SystemtoDTO(system_class);
+        systemService.createSystem(systemDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Added Successfully");
     }
 
-
-
-
-
+/// should be fixed
     @PostMapping("/{id}/edit")
-    public String editSystem(@ModelAttribute("system") System_Class system,  @PathVariable("id") int id  ) {
+    public String editSystem(@ModelAttribute("system") System_Class system,  @PathVariable("id") Long id  ) {
         // Step 1: Fetch the existing entity from the database by its ID
         System_Class existingSystem = systemService.getSystemById(id);
         if (existingSystem == null) {
@@ -66,14 +67,18 @@ public class SystemController {
 
 
 
-
+    @DeleteMapping("/{name}/deletebyname")
+    public String deleteSystemByName(@PathVariable String name) {
+        systemService.deleteSystemByName(name);
+        return  "deleted Successfully";
+    }
 
 
 
     @DeleteMapping("/{id}/delete")
-    public String deleteSystem(@PathVariable Integer id) {
+    public String deleteSystem(@PathVariable Long id) {
         systemService.deleteSystem(id);
-        return "deleted Successfully";
+        return  "deleted Successfully";
     }
 
 

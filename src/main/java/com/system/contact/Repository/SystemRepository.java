@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SystemRepository extends JpaRepository<System_Class, Integer> {
+public interface SystemRepository extends JpaRepository<System_Class, Long> {
 
 
     Optional<System_Class> findByName(String name);
     List<System> findByDescription(String description);
     List<System> findByNameAndDescription(String name, String description);
+    void deleteByNameContains(String name);
 }

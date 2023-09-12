@@ -20,14 +20,13 @@ public class ContactController {
 
 
     @GetMapping("/list")
-    @ResponseBody
     public List<Contact> listContacts() {
         List<Contact> contact = contactService.getAllContacts();
         return contact;
     }
 
     @GetMapping("/{id}")
-    public Contact viewContacts(@PathVariable Integer id, Model model) {
+    public Contact viewContacts(@PathVariable Long id, Model model) {
         Contact contact = contactService.getContactById(id);
         model.addAttribute("contact", contact);
         return contact;
@@ -49,7 +48,7 @@ public class ContactController {
     }
 
     @DeleteMapping("/{id}/delete")
-    public String deleteContact(@PathVariable Integer id) {
+    public String deleteContact(@PathVariable Long id) {
         contactService.deleteContact(id);
         return "deleted Successfully";
     }

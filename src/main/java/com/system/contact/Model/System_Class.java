@@ -1,24 +1,26 @@
 package com.system.contact.Model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
 @Table(name = "system_tbl")
 public class System_Class {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
 
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "systemid", fetch = FetchType.LAZY)
-    private List<PhoneBook> phoneBookIdList;
+    private List<PhoneBook> phoneBookList;
 
 
     @Column(name = "description")
@@ -47,11 +49,11 @@ public class System_Class {
     }
 
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -89,11 +91,11 @@ public class System_Class {
     }
 
     public List<PhoneBook> getPhoneBookList() {
-        return phoneBookIdList;
+        return phoneBookList;
     }
 
-    public void setPhoneBookList(List<PhoneBook> phoneBookIdList) {
-        this.phoneBookIdList = phoneBookIdList;
+    public void setPhoneBookList(List<PhoneBook> phoneBookList) {
+        this.phoneBookList = phoneBookList;
     }
 
 
