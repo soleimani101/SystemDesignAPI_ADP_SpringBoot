@@ -1,17 +1,22 @@
-package com.system.contact.DTO.ContactDTO;
+package com.system.contact.DTO;
 
 import java.time.LocalDateTime;
 
 public class ContactDTO {
-    private Long id;
+    private static Long id;
     private String name;
     private String family;
     private String age;
-    private String phoneNumber;
+
     private Long phoneBookId; // Representing the ID of the associated PhoneBook
     private LocalDateTime timeCreated;
     private LocalDateTime lastTimeEdited;
-    public Long getId() {
+
+    private  String phoneNumber;
+
+
+
+    public static Long getId() {
         return id;
     }
 

@@ -36,7 +36,6 @@ public class SystemController {
         System_Class system = systemService.getSystemById(id);
         SystemDTO systemDTO = SystemtoDTO(system);
 
-//        model.addAttribute("system", systemDTO);
         return ResponseEntity.ok(systemDTO);
     }
 
@@ -70,15 +69,15 @@ public class SystemController {
     @DeleteMapping("/{name}/deletebyname")
     public String deleteSystemByName(@PathVariable String name) {
         systemService.deleteSystemByName(name);
-        return  "deleted Successfully";
+        return  "deleted Successfully name";
     }
 
 
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/{id}/deletebyid")
     public String deleteSystem(@PathVariable Long id) {
         systemService.deleteSystem(id);
-        return  "deleted Successfully";
+        return  "deleted Successfully id";
     }
 
 

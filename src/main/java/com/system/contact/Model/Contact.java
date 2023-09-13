@@ -24,9 +24,9 @@ public class Contact {
     @Column(name = "phonenumber")
     private String phoneNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "PhoneBookReff", referencedColumnName = "id")
-    private PhoneBook phoneBook;
+
+    @ManyToOne(fetch = FetchType.EAGER, targetEntity = PhoneBook.class)
+    private PhoneBook phonebook;
 
     @Column(name = "time_created")
     @Temporal(TemporalType.TIMESTAMP)
@@ -40,13 +40,21 @@ public class Contact {
     public Contact() {
     }
 
+    public PhoneBook getPhonebook() {
+        return phonebook;
+    }
+
+    public void setPhonebook(PhoneBook phonebook) {
+        this.phonebook = phonebook;
+    }
+
     // Parameterized constructor
     public Contact(String name, String family, String age, String phoneNumber, PhoneBook phoneBook, LocalDateTime timeCreated, LocalDateTime lastTimeEdited) {
         this.name = name;
         this.family = family;
         this.age = age;
         this.phoneNumber = phoneNumber;
-        this.phoneBook = phoneBook;
+        this.phonebook = phoneBook;
         this.timeCreated = timeCreated;
         this.lastTimeEdited = lastTimeEdited;
     }
@@ -91,14 +99,6 @@ public class Contact {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public PhoneBook getPhoneBook() {
-        return phoneBook;
-    }
-
-    public void setPhoneBook(PhoneBook phoneBook) {
-        this.phoneBook = phoneBook;
     }
 
     public LocalDateTime getTimeCreated() {

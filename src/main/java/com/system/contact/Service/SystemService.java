@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class SystemService {
     }
 
     public void deleteSystemByName(String name) {
-        systemRepository.deleteByNameContains(name);
+        systemRepository.deleteByName(name);
     }
 
     public void deleteAllSystems() {
@@ -69,7 +70,19 @@ public class SystemService {
         systemDTO.setId(system.getId());
         systemDTO.setName(system.getName());
         systemDTO.setDescription(system.getDescription());
-        systemDTO.setListIdPhoneBook(system.getPhoneBookList().stream().map(PhoneBook::getId).collect(Collectors.toList()));
+
+
+        List<PhoneBook> phoneBookList = system.getPhoneBookList();
+
+        if (phoneBookList == null || phoneBookList.isEmpty()) {
+            systemDTO.setListIdPhoneBook(Collections.emptyList());
+        } else {
+            List<Long> listIdPhoneBook = phoneBookList.stream()
+                    .map(PhoneBook::getId)
+                    .collect(Collectors.toList());
+
+            systemDTO.setListIdPhoneBook(listIdPhoneBook);
+        }
         systemDTO.setTimeCreated(system.getTimeCreated());
         systemDTO.setLastTimeEdited(system.getLastTimeEdited());
         return systemDTO;
@@ -79,8 +92,13 @@ public class SystemService {
         System_Class system = new System_Class();
         system.setId(systemDTO.getId());
         system.setName(systemDTO.getName());
-        system.setPhoneBookList(systemDTO.getListIdPhoneBook().stream().map(PhoneBookService::getPhoneBookById).collect(Collectors.toList()));
+        List<Long> phoneBookIdList = systemDTO.getListIdPhoneBook();
+        List<PhoneBook> phoneBookList = phoneBookIdList.stream().map(Id -> PhoneBookService.toEntity(PhoneBookService.getPhoneBookById(Id))).collect(Collectors.toList());
+        system.setPhoneBookList(phoneBookList);
+
         system.setDescription(systemDTO.getDescription());
+
+
         system.setTimeCreated(systemDTO.getTimeCreated());
         system.setLastTimeEdited(systemDTO.getLastTimeEdited());
         return system;

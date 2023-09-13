@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
@@ -23,6 +24,19 @@ public class PhoneBook {
 
     @ManyToOne(fetch = FetchType.EAGER, targetEntity = System_Class.class)
     private System_Class systemid;
+
+
+    public List<Contact> getContactList() {
+        return contactList;
+    }
+
+    public void setContactList(List<Contact> contactList) {
+        this.contactList = contactList;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "phonebook", fetch = FetchType.LAZY)
+    private List<Contact> contactList;
+
 
     @Column(name = "time_created")
     @Temporal(TemporalType.TIMESTAMP)

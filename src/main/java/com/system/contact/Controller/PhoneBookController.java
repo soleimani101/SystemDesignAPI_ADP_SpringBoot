@@ -21,7 +21,7 @@ public class PhoneBookController {
     private final PhoneBookService phoneBookService;
 
     @Autowired
-    public PhoneBookController(PhoneBookService phoneBookService,SystemService systemService ) {
+    public PhoneBookController(PhoneBookService phoneBookService, SystemService systemService) {
         this.phoneBookService = phoneBookService;
     }
 
@@ -29,35 +29,24 @@ public class PhoneBookController {
     @GetMapping("/list")
     public ResponseEntity<List<PhoneBookDTO>> listPhoneBook() {
         List<PhoneBookDTO> phoneBooks = phoneBookService.getAllPhoneBook();
-        return ResponseEntity.ok(phoneBooks) ;
+        return ResponseEntity.ok(phoneBooks);
     }
-
-
 
 
     @GetMapping("/{id}")
-    public PhoneBook viewPhoneBook(@PathVariable Long id, Model model) {
-        PhoneBook system = phoneBookService.getPhoneBookById(id);
-        model.addAttribute("phonebook", system);
-        return system;
+    public PhoneBookDTO viewPhoneBook(@PathVariable Long id, Model model) {
+        PhoneBookDTO phoneBookDTO = phoneBookService.getPhoneBookById(id);
+        return phoneBookDTO;
     }
-
 
 
     @PostMapping("/{id}/new")
     public ResponseEntity<String> createPhoneBook(@PathVariable("id") Long id, @ModelAttribute("Phonebook") PhoneBook phoneBook) {
 
-        PhoneBookDTO phoneBookDTO = toDTO(phoneBook);
-        phoneBookService.createPhoneBook(phoneBookDTO,id);
+        PhoneBookDTO phoneBookDTO = toDTO(phoneBook,id);
+        phoneBookService.createPhoneBook(phoneBookDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Added Successfully");
     }
-
-
-
-
-
-
-
 
 
     @PostMapping("/{id}/edit")
@@ -65,6 +54,9 @@ public class PhoneBookController {
         phoneBookService.updatePhoneBook(phoneBook);
         return "edited Successfully";
     }
+
+
+
 
     @DeleteMapping("/{id}/delete")
     public String deletePhoneBook(@PathVariable Long id) {
