@@ -1,16 +1,14 @@
 package com.system.contact.Service;
 
 import com.system.contact.DTO.SystemDTO;
-import com.system.contact.Model.PhoneBook;
 import com.system.contact.Model.System_Class;
 import com.system.contact.Repository.SystemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,18 +26,19 @@ public class SystemService {
         return systemRepository.findAll().stream().map(SystemService::SystemtoDTO).collect(Collectors.toList());
     }
 
-    public System_Class getSystemById(Long id) {
-        Optional<System_Class> system = systemRepository.findById(id);
-        return system.orElse(null);
+    public SystemDTO getSystemById(Long id) {
+        System_Class system = systemRepository.findById(id).get();
+        SystemDTO systemDTO  = SystemtoDTO(system) ; 
+        return systemDTO;
     }
 
-    public System_Class getSystemIdByName(String name) {
-        Optional<System_Class> system = systemRepository.findByName(name);
-        return system.orElse(null);
+    public SystemDTO getSystemIdByName(String name) {
+        System_Class system = systemRepository.findByName(name).get();
+        SystemDTO systemDTO  = SystemtoDTO(system) ;
+        return  systemDTO ; 
     }
 
     public void createSystem(SystemDTO systemDTO) {
-
         LocalDateTime localDateTime = LocalDateTime.now();
         systemDTO.setTimeCreated(localDateTime);
         systemDTO.setLastTimeEdited(localDateTime);
@@ -57,8 +56,13 @@ public class SystemService {
         systemRepository.deleteById(id);
     }
 
+    @Transactional
     public void deleteSystemByName(String name) {
-        systemRepository.deleteByName(name);
+        try {
+            systemRepository.deleteDistinctByName(name);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void deleteAllSystems() {
@@ -71,18 +75,6 @@ public class SystemService {
         systemDTO.setName(system.getName());
         systemDTO.setDescription(system.getDescription());
 
-
-        List<PhoneBook> phoneBookList = system.getPhoneBookList();
-
-        if (phoneBookList == null || phoneBookList.isEmpty()) {
-            systemDTO.setListIdPhoneBook(Collections.emptyList());
-        } else {
-            List<Long> listIdPhoneBook = phoneBookList.stream()
-                    .map(PhoneBook::getId)
-                    .collect(Collectors.toList());
-
-            systemDTO.setListIdPhoneBook(listIdPhoneBook);
-        }
         systemDTO.setTimeCreated(system.getTimeCreated());
         systemDTO.setLastTimeEdited(system.getLastTimeEdited());
         return systemDTO;
@@ -90,15 +82,8 @@ public class SystemService {
 
     private System_Class SystemtoEntity(SystemDTO systemDTO) {
         System_Class system = new System_Class();
-        system.setId(systemDTO.getId());
         system.setName(systemDTO.getName());
-        List<Long> phoneBookIdList = systemDTO.getListIdPhoneBook();
-        List<PhoneBook> phoneBookList = phoneBookIdList.stream().map(Id -> PhoneBookService.toEntity(PhoneBookService.getPhoneBookById(Id))).collect(Collectors.toList());
-        system.setPhoneBookList(phoneBookList);
-
         system.setDescription(systemDTO.getDescription());
-
-
         system.setTimeCreated(systemDTO.getTimeCreated());
         system.setLastTimeEdited(systemDTO.getLastTimeEdited());
         return system;

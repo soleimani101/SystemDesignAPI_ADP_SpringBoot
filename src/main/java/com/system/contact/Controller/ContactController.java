@@ -2,9 +2,9 @@
 package com.system.contact.Controller;
 
 import com.system.contact.DTO.ContactDTO;
-import com.system.contact.Model.Contact;
 import com.system.contact.Service.ContactService;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,33 +20,39 @@ public class ContactController {
     }
 
 
-    @GetMapping("/list")
+    @GetMapping
     public List<ContactDTO> listContacts() {
         List<ContactDTO> contactlist = contactService.getAllContacts();
         return contactlist;
     }
 
     @GetMapping("/{id}")
-    public ContactDTO viewContacts(@PathVariable Long id, Model model) {
+    public ContactDTO viewContacts(@PathVariable Long id) {
+        System.out.println(id);
         ContactDTO contactDTO = contactService.getContactById(id);
         return contactDTO;
     }
 
 
-    @PostMapping("/{id}/new")
-    public String createContact(@ModelAttribute("contact") Contact contact,@PathVariable("id") Long id) {
+    @PostMapping
+    public ResponseEntity<String> createContact(@ModelAttribute("Contact") ContactDTO contactDTO) {
 
-        ContactDTO contactDTO = ContactService.toDTO(contact,id);
         contactService.createContact(contactDTO);
-        return "added Successfully";
+        return ResponseEntity.status(HttpStatus.CREATED).body("Added Successfully");
     }
 
 
-    @PostMapping("/{id}/edit")
-    public String editContact(@ModelAttribute("contact") Contact contact) {
-        contactService.updateContact(contact);
-        return "edited Successfully";
-    }
+
+
+
+
+
+//
+//    @PostMapping("/{id}/edit")
+//    public String editContact(@ModelAttribute("contact") Contact contact) {
+//        contactService.updateContact(contact);
+//        return "edited Successfully";
+//    }
 
     @DeleteMapping("/{id}/delete")
     public String deleteContact(@PathVariable Long id) {

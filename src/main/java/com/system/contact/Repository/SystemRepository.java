@@ -15,6 +15,5 @@ public interface SystemRepository extends JpaRepository<System_Class, Long> {
     List<System_Class> findByDescription(String description);
 
     List<System_Class> findByNameAndDescription(String name, String description);
-
-    void deleteByName(String name);
+    void deleteDistinctByName(String name);
 }

@@ -27,14 +27,14 @@ public class ContactService {
     public List<ContactDTO> getAllContacts() {
         return contactRepository.findAll()
                 .stream()
-                .map(contact -> ContactService.toDTO(contact, contact.getPhonebook().getId()))
+                .map(ContactService::toDTO)
                 .collect(Collectors.toList());
     }
 
 
     public ContactDTO getContactById(Long id) {
         Contact contact = contactRepository.findById(id).get();
-        ContactDTO phoneBookDTO =  toDTO(contact,id) ;
+        ContactDTO phoneBookDTO =  toDTO(contact) ;
         return phoneBookDTO;
     }
 
@@ -43,6 +43,7 @@ public class ContactService {
         LocalDateTime localDateTime = LocalDateTime.now();
         contactDTO.setTimeCreated(localDateTime);
         contactDTO.setLastTimeEdited(localDateTime);
+
         Contact contact = toEntity(contactDTO);
         contactRepository.save(contact);
     }
@@ -57,14 +58,14 @@ public class ContactService {
     }
 
 
-    public static ContactDTO toDTO(Contact contact,Long id) {
+    public static ContactDTO toDTO(Contact contact ) {
         ContactDTO contactDTO = new ContactDTO();
         contactDTO.setId(contact.getId());
         contactDTO.setName(contact.getName());
         contactDTO.setFamily(contact.getFamily());
         contactDTO.setAge(contact.getAge());
         contactDTO.setPhoneNumber(contact.getPhoneNumber());
-        contactDTO.setPhoneBookId(id); // Set the phoneBookId
+        contactDTO.setPhoneBookId(contact.getPhonebook().getId()); // Set the phoneBookId
         contactDTO.setTimeCreated(contact.getTimeCreated());
         contactDTO.setLastTimeEdited(contact.getLastTimeEdited());
         return contactDTO;
@@ -78,7 +79,6 @@ public class ContactService {
         contact.setFamily(contactDTO.getFamily());
         contact.setAge(contactDTO.getAge());
         contact.setPhoneNumber(contactDTO.getPhoneNumber());
-
         PhoneBook phoneBook = new PhoneBook();
         phoneBook.setId(contactDTO.getPhoneBookId());
         contact.setPhonebook(phoneBook);

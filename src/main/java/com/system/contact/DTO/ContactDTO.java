@@ -3,7 +3,9 @@ package com.system.contact.DTO;
 import java.time.LocalDateTime;
 
 public class ContactDTO {
-    private static Long id;
+
+    private  Long id;
+
     private String name;
     private String family;
     private String age;
@@ -15,8 +17,7 @@ public class ContactDTO {
     private  String phoneNumber;
 
 
-
-    public static Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -81,6 +82,4 @@ public class ContactDTO {
     }
 
 
-
-    // getters and setters
 }

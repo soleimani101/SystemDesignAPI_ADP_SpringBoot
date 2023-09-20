@@ -1,7 +1,6 @@
 package com.system.contact.DTO;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class PhoneBookDTO {
     private Long id;
@@ -11,15 +10,15 @@ public class PhoneBookDTO {
     private LocalDateTime lastTimeEdited;
     private  Long systemId ;
 
-    public List<Long> getListIdContact() {
-        return ListIdContact;
-    }
+//    public List<Long> getListIdContact() {
+//        return ListIdContact;
+//    }
+//
+//    public void setListIdContact(List<Long> listIdContact) {
+//        ListIdContact = listIdContact;
+//    }
 
-    public void setListIdContact(List<Long> listIdContact) {
-        ListIdContact = listIdContact;
-    }
-
-    private List<Long> ListIdContact;
+//    private List<Long> ListIdContact;
 
 
     public Long getId() {
