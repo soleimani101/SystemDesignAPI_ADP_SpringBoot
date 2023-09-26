@@ -7,14 +7,21 @@ public class SmsDTO {
 
     private Long id;
     private String body;
+
     private String sourceNumber;
     private String destinationNumber;
     private LocalDateTime sentDate;
-    private List<Long> associationIds;
+    private List<SmsAssociationDTO> associations;
 
 
     // Getters and Setters (omitted for brevity)
+    public List<SmsAssociationDTO> getAssociations() {
+        return associations;
+    }
 
+    public void setAssociations(List<SmsAssociationDTO> associations) {
+        this.associations = associations;
+    }
     public SmsDTO() {
     }
 
@@ -58,23 +65,16 @@ public class SmsDTO {
         this.sentDate = sentDate;
     }
 
-    public List<Long> getAssociationIds() {
-        return associationIds;
-    }
 
-    public void setAssociationIds(List<Long> associationIds) {
-        this.associationIds = associationIds;
-    }
 
 
     public SmsDTO(Long id, String body, String sourceNumber, String destinationNumber,
-                  LocalDateTime sentDate, List<Long> associationIds) {
+                  LocalDateTime sentDate, List<SmsAssociationDTO> associations) {
         this.id = id;
         this.body = body;
         this.sourceNumber = sourceNumber;
         this.destinationNumber = destinationNumber;
         this.sentDate = sentDate;
-        this.associationIds = associationIds;
-
+        this.associations = associations;
     }
 }

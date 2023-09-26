@@ -28,7 +28,7 @@
         private LocalDateTime sentDate;
 
 
-        @OneToMany(mappedBy = "sms")
+        @OneToMany(mappedBy = "sms",cascade = CascadeType.ALL)
         private List<SmsAssociation> associations = new ArrayList<>();
 
 

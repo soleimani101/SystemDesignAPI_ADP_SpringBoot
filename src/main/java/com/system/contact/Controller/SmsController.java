@@ -1,6 +1,7 @@
 package com.system.contact.Controller;
 
 import com.system.contact.DTO.SmsDTO;
+import com.system.contact.DTO.SmsResponseDTO;
 import com.system.contact.Service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,10 +32,19 @@ public class SmsController {
 
 
     @GetMapping("/{id}")
-    public SmsDTO getSmsById(@PathVariable Long id) {
-        SmsDTO smsDTO = smsService.getSmsById(id);
+    public SmsResponseDTO getSmsById(@PathVariable Long id) {
+        SmsResponseDTO smsDTO = smsService.getSmsById(id);
         return smsDTO ;
     }
+
+
+//
+//    @GetMapping("/{id}/contacts")
+//    public List<ContactDTO> getcontactsById(@PathVariable Long id) {
+//        List<ContactDTO> contactList = smsService.getContactsById(id);
+//        return contactList ;
+//    }
+
 
     @PostMapping
     public ResponseEntity<String> createSms(@RequestBody SmsDTO smsDTO) {

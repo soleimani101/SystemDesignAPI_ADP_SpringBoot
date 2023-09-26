@@ -24,6 +24,8 @@ public class SmsAssociation {
     @Column(name = "sms_condition")
     private String smsCondition;
 
+
+
     public Long getId() {
         return id;
     }

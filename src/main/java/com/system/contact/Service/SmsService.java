@@ -1,16 +1,14 @@
 package com.system.contact.Service;
 
-import com.system.contact.DTO.SmsDTO;
-import com.system.contact.Model.Sms;
-import com.system.contact.Model.SmsAssociation;
-import com.system.contact.Repository.SmsAssociationRepository;
+import com.system.contact.DTO.*;
+import com.system.contact.Model.*;
+import com.system.contact.Repository.ContactRepository;
 import com.system.contact.Repository.SmsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +16,14 @@ public class SmsService {
 
     @Autowired
     private SmsRepository smsRepository;
-    private SmsAssociationRepository smsAssociationRepository;
+    @Autowired
+    private ContactRepository contactRepository;
+    @Autowired
+    private PhoneBookService phoneBookService;
+
+    @Autowired
+    private ContactService contactService;
+
 
     public List<SmsDTO> getAllSms() {
         return smsRepository.findAll()
@@ -27,33 +32,67 @@ public class SmsService {
                 .collect(Collectors.toList());
     }
 
-    public SmsDTO getSmsById(Long id) {
-        Sms sms = smsRepository.findById(id).get();
+    public SmsResponseDTO getSmsById(Long id) {
+        List<ContactDTO> contactsFinal = new ArrayList<>();
+        List<Contact> filteredContactList = new ArrayList<>();
+        Set<String> processedPhoneNumbers = new HashSet<>();
+        Map<String, String> phoneToNameMapping = new HashMap<>();
+
+        Sms sms = smsRepository.findById(id).orElse(null);
+        if (sms != null) {
+            List<SmsAssociation> smsAssociations = sms.getAssociations();
+            String destinationNumber = sms.getDestinationNumber();  // Get destination number
+
+            for (SmsAssociation smsAssociation : smsAssociations) {
+                PhoneBook phoneBook = smsAssociation.getPhoneBook();
+                int age = smsAssociation.getAgeLimit();
+                String condition = smsAssociation.getSmsCondition();
+
+                if(condition == "less") {
+                     filteredContactList = contactRepository.findByAgeLessThan(age);
+                }
+                if(condition == "greater") {
+                     filteredContactList = contactRepository.findByAgeGreaterThan(age);
+                }
+                if(condition == "equal") {
+                     filteredContactList = contactRepository.findByAgeEquals(age);
+                }
+
+
+
+                for (Contact contact : filteredContactList) {
+                    int contactAge = Integer.parseInt(contact.getAge());
+                    String phoneNumber = contact.getPhoneNumber();
+
+                    if (processedPhoneNumbers.contains(phoneNumber)) {
+                        continue;
+                    }
+
+
+
+
+
+                }
+            }
+
+            if (destinationNumber != null) {
+                contactsFinal.clear();  // Clear the contacts list
+            }
+        }
+
         SmsDTO smsDto = toDTO(sms);
-        return smsDto;
+        return new SmsResponseDTO(smsDto, contactsFinal);
     }
+
 
     public Sms createSms(SmsDTO smsDTO) {
         LocalDateTime localDateTime = LocalDateTime.now();
         smsDTO.setSentDate(localDateTime);
         Sms sms = toEntity(smsDTO);
+//        Sms save = smsRepository.save(sms);
+//        save.getId()
         return smsRepository.save(sms);
     }
-
-//    public Sms updateSms(Long id, Sms sms) {
-//        Optional<Sms> existingSmsOptional = smsRepository.findById(id);
-//        if (existingSmsOptional.isPresent()) {
-//            Sms existingSms = existingSmsOptional.get();
-//            // Update relevant fields of existingSms with sms
-//            existingSms.setBody(sms.getBody());
-//            existingSms.setSourceNumber(sms.getSourceNumber());
-//            // Update other fields as needed
-//
-//            return smsRepository.save(existingSms);
-//        } else {
-//            return null; // Sms with given id not found
-//        }
-//    }
 
     public void deleteSms(Long id) {
         smsRepository.deleteById(id);
@@ -66,49 +105,53 @@ public class SmsService {
 
     public SmsDTO toDTO(Sms sms) {
         SmsDTO smsDTO = new SmsDTO();
+
         smsDTO.setId(sms.getId());
         smsDTO.setBody(sms.getBody());
         smsDTO.setSourceNumber(sms.getSourceNumber());
         smsDTO.setDestinationNumber(sms.getDestinationNumber());
         smsDTO.setSentDate(sms.getSentDate());
-
-//        // Assuming you have a method to extract phonebook IDs from PhoneBook entities
-        List<Long> assosiationIds = extractAssosiationId(sms.getAssociations());
-        smsDTO.setAssociationIds(assosiationIds);
+        List<SmsAssociation> smsAssosiactions = sms.getAssociations();
+        List<SmsAssociationDTO> smsAssociationsDTO = smsAssosiactions.stream().map(smsAssosiaction -> SmsAssociationtoDto(smsAssosiaction)).collect(Collectors.toList());
+        smsDTO.setAssociations(smsAssociationsDTO);
 
         return smsDTO;
     }
 
     public Sms toEntity(SmsDTO smsDTO) {
         Sms sms = new Sms();
-        sms.setId(smsDTO.getId());
         sms.setBody(smsDTO.getBody());
         sms.setSourceNumber(smsDTO.getSourceNumber());
         sms.setDestinationNumber(smsDTO.getDestinationNumber());
         sms.setSentDate(smsDTO.getSentDate());
-        // Assuming you have a method to convert phonebook IDs to PhoneBook entities
-        List<SmsAssociation> smsAssosiactions = convertIdToSmsAssosiaction(smsDTO.getAssociationIds());
-        sms.setAssociations(smsAssosiactions);
+
+
+        List<SmsAssociationDTO> smsAssosiactionsDTO = smsDTO.getAssociations();
+        List<SmsAssociation> smsAssociations = smsAssosiactionsDTO.stream().map(smsAssosiactionDTO -> SmsAssociationtoEntity(smsAssosiactionDTO,sms)).collect(Collectors.toList());
+        System.out.println(smsAssociations);
+        sms.setAssociations(smsAssociations);
         return sms;
     }
 
 
-    private static List<Long> extractAssosiationId(List<SmsAssociation> smsAssociations) {
-        List<Long> smsasossiationid = new ArrayList<>();
-        for (SmsAssociation smsAssociation : smsAssociations) {
-            smsasossiationid.add(smsAssociation.getId());
-        }
-        return smsasossiationid;
+    public SmsAssociation SmsAssociationtoEntity(SmsAssociationDTO smsAssociationDTO,Sms sms) {
+        SmsAssociation smsAssociation = new SmsAssociation();
+
+        PhoneBookDTO phoneBookDTO = phoneBookService.getPhoneBookById(smsAssociationDTO.getPhoneBookId());
+        smsAssociation.setPhoneBook(phoneBookService.toEntity(phoneBookDTO));
+        smsAssociation.setSms(sms);
+        smsAssociation.setAgeLimit(smsAssociationDTO.getAgeLimit());
+        smsAssociation.setSmsCondition(smsAssociationDTO.getSmsCondition());
+        return smsAssociation;
     }
 
 
-    private List<SmsAssociation> convertIdToSmsAssosiaction(List<Long> smsasossiationids) {
-        List<SmsAssociation> smsasossiations = new ArrayList<>();
-        for (Long smsasossiationid : smsasossiationids) {
-            SmsAssociation smsAssociation = smsAssociationRepository.findById(smsasossiationid).get();
-            smsasossiations.add(smsAssociation);
-        }
-        return smsasossiations;
+    public SmsAssociationDTO SmsAssociationtoDto(SmsAssociation smsAssociation) {
+        SmsAssociationDTO dto = new SmsAssociationDTO();
+        dto.setPhoneBookId(smsAssociation.getPhoneBook().getId());
+        dto.setAgeLimit(smsAssociation.getAgeLimit());
+        dto.setSmsCondition(smsAssociation.getSmsCondition());
+        return dto;
     }
 
 }

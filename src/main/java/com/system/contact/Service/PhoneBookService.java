@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class PhoneBookService {
 
-    public static PhoneBookRepository phoneBookRepository;
+    public  PhoneBookRepository phoneBookRepository;
 
     @Autowired
     public PhoneBookService(PhoneBookRepository phoneBookRepository) {
@@ -70,7 +70,7 @@ public class PhoneBookService {
         return phoneBookDTO;
     }
 
-   private PhoneBook toEntity(PhoneBookDTO phoneBookDTO) {
+   public PhoneBook toEntity(PhoneBookDTO phoneBookDTO) {
         PhoneBook phoneBook = new PhoneBook();
         phoneBook.setId(phoneBookDTO.getId());
         phoneBook.setName(phoneBookDTO.getName());
