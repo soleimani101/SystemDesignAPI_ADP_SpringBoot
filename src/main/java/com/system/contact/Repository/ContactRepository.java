@@ -10,8 +10,8 @@ import java.util.List;
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Long> {
 
-    List<Contact> findByAgeGreaterThanAndPhonebookEquals(int age,String phonebook);
-    List<Contact> findByAgeLessThanAndPhonebookEquals(int age,String phonebook);
-    List<Contact> findByAgeEqualsAndPhonebookEquals(int age, String phonebook);
+    List<Contact> findAllByPhonebookIdAndAgeLessThan(Long phoneBookId,int age);
+    List<Contact> findAllByPhonebookIdAndAgeGreaterThan(Long phoneBookId,int age);
+    List<Contact> findAllByPhonebookIdAndAgeEquals(Long phoneBookId,int age);
 
 }

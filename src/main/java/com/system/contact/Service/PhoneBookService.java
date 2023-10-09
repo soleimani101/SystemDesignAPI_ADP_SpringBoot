@@ -4,11 +4,13 @@ import com.system.contact.DTO.PhoneBookDTO;
 import com.system.contact.Model.PhoneBook;
 import com.system.contact.Model.System_Class;
 import com.system.contact.Repository.PhoneBookRepository;
+import com.system.contact.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,19 +24,32 @@ public class PhoneBookService {
     }
 
 
-    public List<PhoneBookDTO> getAllPhoneBook() {
-        return phoneBookRepository.findAll()
-                .stream()
+    public List<PhoneBookDTO> getAllPhoneBook() throws CustomException{
+        List<PhoneBook> phoneBooks = phoneBookRepository.findAll();
+
+        if (phoneBooks.isEmpty()) {
+            throw new CustomException("No phone books found", "There are no phone books available", 111);
+        }
+        return phoneBooks.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
 
-    public  PhoneBookDTO getPhoneBookById(Long id) {
-        PhoneBook phoneBook = phoneBookRepository.findById(id).get();
+    public PhoneBookDTO getPhoneBookById(Long id) throws CustomException{
+
+        Optional<PhoneBook> optionalPhoneBook = phoneBookRepository.findById(id);
+        if (optionalPhoneBook.isEmpty()) {
+            throw new CustomException("Phone book not found", "The phone book with ID " + id + " does not exist", 111);
+        }
+
+        PhoneBook phoneBook = optionalPhoneBook.get();
         PhoneBookDTO phoneBookDTO = toDTO(phoneBook);
         return phoneBookDTO;
     }
+
+
+
 
     public void createPhoneBook(PhoneBookDTO phoneBookDTO) {
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -45,11 +60,13 @@ public class PhoneBookService {
     }
 
 
-    public void updatePhoneBook(PhoneBook phoneBook) {
-        phoneBookRepository.save(phoneBook);
-    }
+    public void deletePhoneBook(Long id) throws CustomException{
+        Optional<PhoneBook> optionalPhoneBook = phoneBookRepository.findById(id);
 
-    public void deletePhoneBook(Long id) {
+        if (optionalPhoneBook.isEmpty()) {
+            throw new CustomException("Phone book not found", "The phone book with ID " + id + " does not exist", 111);
+        }
+
         phoneBookRepository.deleteById(id);
     }
 

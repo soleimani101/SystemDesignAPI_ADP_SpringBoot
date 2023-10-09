@@ -3,6 +3,7 @@ package com.system.contact.Controller;
 import com.system.contact.DTO.PhoneBookDTO;
 import com.system.contact.Service.PhoneBookService;
 import com.system.contact.Service.SystemService;
+import com.system.contact.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,20 +25,15 @@ public class PhoneBookController {
 
 
     @GetMapping
-    public ResponseEntity<List<PhoneBookDTO>> listPhoneBook() {
-        try {
+    public ResponseEntity<List<PhoneBookDTO>> listPhoneBook()throws CustomException {
             List<PhoneBookDTO> phoneBooks = phoneBookService.getAllPhoneBook();
             return ResponseEntity.ok(phoneBooks);
-        } catch (Exception e) {
-            String errorMessage = "An error occurred while listing phone books: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
 
 
     @GetMapping("/{id}")
-    public PhoneBookDTO viewPhoneBook(@PathVariable Long id) {
+    public PhoneBookDTO viewPhoneBook(@PathVariable Long id)throws CustomException {
         PhoneBookDTO phoneBookDTO = phoneBookService.getPhoneBookById(id);
         return phoneBookDTO;
     }
@@ -45,7 +41,7 @@ public class PhoneBookController {
 
 
     @PostMapping
-    public ResponseEntity<String> createPhoneBook( @ModelAttribute("Phonebook") PhoneBookDTO phoneBookDTO) {
+    public ResponseEntity<String> createPhoneBook( @ModelAttribute("Phonebook") PhoneBookDTO phoneBookDTO)throws CustomException {
         phoneBookService.createPhoneBook(phoneBookDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Added Successfully");
     }
@@ -61,14 +57,14 @@ public class PhoneBookController {
 
 
     @DeleteMapping("/{id}/delete")
-    public String deletePhoneBook(@PathVariable Long id) {
+    public String deletePhoneBook(@PathVariable Long id)throws CustomException {
         phoneBookService.deletePhoneBook(id);
         return "deleted Successfully";
     }
 
 
     @DeleteMapping("/all/delete")
-    public String deleteWholeSystems() {
+    public String deleteWholeSystems() throws CustomException{
         phoneBookService.deleteAllSystems();
         return "all deleted Successfully";
     }

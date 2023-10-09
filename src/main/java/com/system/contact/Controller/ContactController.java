@@ -3,6 +3,7 @@ package com.system.contact.Controller;
 
 import com.system.contact.DTO.ContactDTO;
 import com.system.contact.Service.ContactService;
+import com.system.contact.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,42 +22,27 @@ public class ContactController {
 
 
     @GetMapping
-    public List<ContactDTO> listContacts() {
+    public ResponseEntity<List<ContactDTO>> listContacts() throws CustomException {
         List<ContactDTO> contactlist = contactService.getAllContacts();
-        return contactlist;
+        return ResponseEntity.ok(contactlist) ;
     }
 
     @GetMapping("/{id}")
-    public ContactDTO viewContacts(@PathVariable Long id) {
-        System.out.println(id);
+    public ResponseEntity<ContactDTO> viewContacts(@PathVariable Long id) throws CustomException{
         ContactDTO contactDTO = contactService.getContactById(id);
-        return contactDTO;
+      return   ResponseEntity.ok(contactDTO);
     }
 
 
     @PostMapping
-    public ResponseEntity<String> createContact(@ModelAttribute("Contact") ContactDTO contactDTO) {
-
+    public ResponseEntity<String> createContact(@ModelAttribute("Contact") ContactDTO contactDTO) throws CustomException {
         contactService.createContact(contactDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Added Successfully");
     }
 
-
-
-
-
-
-
-//
-//    @PostMapping("/{id}/edit")
-//    public String editContact(@ModelAttribute("contact") Contact contact) {
-//        contactService.updateContact(contact);
-//        return "edited Successfully";
-//    }
-
-    @DeleteMapping("/{id}/delete")
-    public String deleteContact(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteContact(@PathVariable Long id) throws CustomException {
         contactService.deleteContact(id);
-        return "deleted Successfully";
+        return ResponseEntity.status(HttpStatus.OK).body("deleted Successfully");
     }
 }

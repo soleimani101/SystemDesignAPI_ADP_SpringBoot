@@ -19,7 +19,7 @@ public class Contact {
     private String family;
 
     @Column(name = "age")
-    private String age;
+    private int age;
 
     @Column(name = "phonenumber")
     private String phoneNumber;
@@ -49,7 +49,7 @@ public class Contact {
     }
 
     // Parameterized constructor
-    public Contact(String name, String family, String age, String phoneNumber, PhoneBook phoneBook, LocalDateTime timeCreated, LocalDateTime lastTimeEdited) {
+    public Contact(String name, String family, int age, String phoneNumber, PhoneBook phoneBook, LocalDateTime timeCreated, LocalDateTime lastTimeEdited) {
         this.name = name;
         this.family = family;
         this.age = age;
@@ -85,11 +85,11 @@ public class Contact {
         this.family = family;
     }
 
-    public String getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(String age) {
+    public void setAge(int age) {
         this.age = age;
     }
 

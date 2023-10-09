@@ -2,6 +2,7 @@ package com.system.contact.Controller;
 
 import com.system.contact.DTO.SystemDTO;
 import com.system.contact.Service.SystemService;
+import com.system.contact.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,103 +23,48 @@ public class SystemController {
         this.systemService = systemService;
     }
 
+
     @GetMapping
-    public ResponseEntity<List<SystemDTO>> listSystems() {
-        try {
+    public ResponseEntity<List<SystemDTO>> listSystems() throws CustomException {
+
             List<SystemDTO> systems = systemService.getAllSystems();
             return ResponseEntity.ok(systems);
-        } catch (Exception e) {
-            String errorMessage = "An error occurred while listing systems: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<SystemDTO> viewSystem(@PathVariable Long id, Model model) {
-        try {
+    public ResponseEntity<SystemDTO> viewSystem(@PathVariable Long id, Model model)throws CustomException {
             SystemDTO systemDTO = systemService.getSystemById(id);
             return ResponseEntity.ok(systemDTO);
-        } catch (Exception e) {
-            String errorMessage = "An error occurred while viewing the system: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
     @PostMapping
-    public ResponseEntity<String> createSystem(@ModelAttribute("system") SystemDTO systemDTO, BindingResult bindingResult) {
-        try {
+    public ResponseEntity<String> createSystem(@ModelAttribute("system") SystemDTO systemDTO, BindingResult bindingResult)throws CustomException {
             systemService.createSystem(systemDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Added Successfully"  );
-        } catch (Exception e) {
-            String errorMessage = "An error occurred while creating the system: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-        }
+            return ResponseEntity.status(HttpStatus.CREATED).body("Added Successfully");
+
     }
 
 
+//@DeleteMapping("/deletebyName/{name}")
+//public ResponseEntity<String> deleteSystemByName(@PathVariable String name)throws CustomException {
+//        systemService.de(name);
+//        return ResponseEntity.status(HttpStatus.OK).body("Deleted Successfully by id");
+//}
 
 
-//    @PutMapping
-//    public ResponseEntity<String> editSystem(@ModelAttribute("system") System_Class system, @PathVariable("id") Long id, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            // Handle validation errors
-//            String errorMessage = "Validation errors occurred: " + bindingResult.getFieldErrors();
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-//        }
-//
-//        try {
-//            System_Class existingSystem = systemService.getSystemById(id);
-//            if (existingSystem == null) {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("System not found");
-//            }
-//
-//            LocalDateTime localDateTime = LocalDateTime.now();
-//            existingSystem.setLastTimeEdited(localDateTime);
-//            systemService.updateSystem(system);
-//
-//            return ResponseEntity.status(HttpStatus.CREATED).body("Edited Successfully");
-//        } catch (Exception e) {
-//            String errorMessage = "An error occurred while editing the system: " + e.getMessage();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-//        }
-//    }
-//
-//
-//
-//
-@DeleteMapping("/{name}/deletebyName")
-public ResponseEntity<String> deleteSystemByName(@PathVariable String name) {
-    try {
-        systemService.deleteSystemByName(name);
+    @DeleteMapping("/deletebyid/{id}")
+    public ResponseEntity deleteSystem(@PathVariable Long id) throws CustomException {
+        systemService.deleteSystem(id);
         return ResponseEntity.status(HttpStatus.OK).body("Deleted Successfully by id");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An error occurred while deleting the system with ID " + name + ": " + e.getMessage());
-    }
-}
-
-
-    @DeleteMapping("/{id}/deletebyid")
-    public ResponseEntity<String> deleteSystem(@PathVariable Long id) {
-        try {
-            systemService.deleteSystem(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Deleted Successfully by id");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while deleting the system with ID " + id + ": " + e.getMessage());
-        }
     }
 
 
     @DeleteMapping("/all/delete")
-    public ResponseEntity<String> deleteWholeSystems() {
-        try {
+    public ResponseEntity<String> deleteWholeSystems() throws CustomException{
             systemService.deleteAllSystems();
             return ResponseEntity.status(HttpStatus.OK).body("All systems deleted successfully");
-        } catch (Exception e) {
-            String errorMessage = "An error occurred while deleting systems: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-        }
+
     }
 
 

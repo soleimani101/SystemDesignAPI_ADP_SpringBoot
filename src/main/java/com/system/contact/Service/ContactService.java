@@ -5,11 +5,13 @@ import com.system.contact.DTO.ContactDTO;
 import com.system.contact.Model.Contact;
 import com.system.contact.Model.PhoneBook;
 import com.system.contact.Repository.ContactRepository;
+import com.system.contact.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,38 +24,53 @@ public class ContactService {
         this.contactRepository =contactRepository ;
     }
 
+    public List<ContactDTO> getAllContacts() throws CustomException {
+        List<Contact> contacts = contactRepository.findAll();
 
+        if (contacts.isEmpty()) {
+            throw new CustomException("No contacts found", "There are no contacts available", 111);
+        }
 
-    public List<ContactDTO> getAllContacts() {
-        return contactRepository.findAll()
-                .stream()
+        return contacts.stream()
                 .map(ContactService::toDTO)
                 .collect(Collectors.toList());
     }
 
 
-    public ContactDTO getContactById(Long id) {
-        Contact contact = contactRepository.findById(id).get();
-        ContactDTO phoneBookDTO =  toDTO(contact) ;
+    public ContactDTO getContactById(Long id) throws CustomException{
+        Optional<Contact> optionalContact = contactRepository.findById(id);
+
+        if (optionalContact.isEmpty()) {
+            throw new CustomException("Contact not found", "The contact with ID " + id + " does not exist", 500);
+        }
+        Contact contact = optionalContact.get();
+        ContactDTO phoneBookDTO = toDTO(contact);
         return phoneBookDTO;
     }
 
-    public void createContact(ContactDTO contactDTO) {
-
-        LocalDateTime localDateTime = LocalDateTime.now();
-        contactDTO.setTimeCreated(localDateTime);
-        contactDTO.setLastTimeEdited(localDateTime);
-
-        Contact contact = toEntity(contactDTO);
-        contactRepository.save(contact);
+    public void createContact(ContactDTO contactDTO)   throws CustomException {
+        try{
+            LocalDateTime localDateTime = LocalDateTime.now();
+            contactDTO.setTimeCreated(localDateTime);
+            contactDTO.setLastTimeEdited(localDateTime);
+            Contact contact = toEntity(contactDTO);
+            contactRepository.save(contact);
+        }catch (Exception e)
+        {
+        throw new CustomException(e.getMessage(),e.getMessage(),111);
+        }
     }
 
 
-    public void updateContact(Contact contact) {
-        contactRepository.save(contact);
-    }
 
-    public void deleteContact(Long id) {
+
+    public void deleteContact(Long id) throws CustomException {
+        Optional<Contact> optionalContact = contactRepository.findById(id);
+
+        if (optionalContact.isEmpty()) {
+            throw new CustomException("Contact not found", "The contact with ID " + id + " does not exist", 111);
+        }
+
         contactRepository.deleteById(id);
     }
 
